@@ -110,6 +110,7 @@ class MongoSingleObjectTemplateResponseMixin(TemplateResponseMixin):
         Return a list of template names to be used for the request. Must return
         a list. May not be called if get_template is overridden.
         """
+        
         try:
             names = super(MongoSingleObjectTemplateResponseMixin,
                           self).get_template_names()
@@ -129,6 +130,11 @@ class MongoSingleObjectTemplateResponseMixin(TemplateResponseMixin):
         if hasattr(self.object, '_meta'):
             names.append("%s/%s.html" % (
                 self.object.__class__.__name__.lower(),
+                self.template_name_suffix
+            ))
+        elif hasattr(self, 'document') and hasattr(self.document, '_meta'):
+            names.append("%s/%s.html" % (
+                self.document.__name__.lower(),
                 self.template_name_suffix
             ))
 

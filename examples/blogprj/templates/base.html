@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>My little blog</title>
+
+    <style type="text/css" media="screen">
+        .post {
+            padding: 10px;
+            border: 1px #999 solid;
+            border-left: 10px #BCF1AA solid;
+            border-bottom: 3px solid #999;
+            border-right: 3px solid #999;
+            margin: 15px;
+        }
+        h1 {
+            margin: 0;
+        }
+        .title {
+            
+        }
+        .infobar {
+            font-size: 90%;
+            color: #505050;
+        }
+        .operations {
+            float: right;
+            font-size: 80%;
+        }
+    </style>
+
+    {% block header %}{% endblock %}
+    <style type="text/css" media="screen">
+        * {
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+        }
+        .not_published *     {
+            color: #B4B4B4 !important;
+        }
+    </style>
+</head>
+<body>
+    {% block body %}Content goes here{% endblock %}
+</body>
+</html>

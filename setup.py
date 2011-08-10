@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from setuptools import setup, find_packages
 
 setup(
@@ -7,7 +9,7 @@ setup(
     description='ClassViews, Form mongoengine support for django',
     author='Wilson Pinto Júnior',
     author_email='wilsonpjunior@gmail.com',
-    url='http://github.com/wpjunior/django-mongoviews/',
+    url='http://github.com/wpjunior/django-mongotools/',
     packages=find_packages(exclude=['examples', 'examples.*']),
     classifiers=[
         'Development Status :: 3 - Alpha',
