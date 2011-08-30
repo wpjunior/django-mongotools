@@ -97,6 +97,11 @@ class MongoFormFieldGenerator(object):
             return getattr(self, 'generate_%s' % \
                 field.__class__.__name__.lower())(field_name, field)
         else:
+            for cls in field.__class__.__bases__:
+                if hasattr(self, 'generate_%s' % cls.__name__.lower()):
+                    return getattr(self, 'generate_%s' % \
+                                       cls.__name__.lower())(field_name, field)
+
             raise NotImplementedError('%s is not supported by MongoForm' % \
                                           field.__class__.__name__)
                 
