@@ -143,6 +143,9 @@ class MongoFormFieldGenerator(object):
 
         if field.max_length and not field.choices:
             defaults['max_length'] = field.max_length
+            
+        if field.max_length is None and not field.choices:
+            defaults['widget'] = forms.Textarea
 
         if field.regex:
             defaults['regex'] = field.regex
