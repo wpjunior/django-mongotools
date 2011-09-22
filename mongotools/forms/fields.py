@@ -282,3 +282,6 @@ class MongoFormFieldGenerator(object):
             
             defaults.update(kwargs)
             return forms.MultipleChoiceField()
+        
+    def generate_filefield(self, field_name, field, **kwargs):
+        return forms.FileField(**kwargs)
