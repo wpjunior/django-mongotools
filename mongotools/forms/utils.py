@@ -1,6 +1,11 @@
+import os
+import itertools
+import gridfs
+
 from django import forms
 from mongoengine.base import ValidationError
 from mongoengine.fields import EmbeddedDocumentField, ListField
+from mongoengine.connection import _get_db
 
 def mongoengine_validate_wrapper(field, old_clean, new_clean):
     """
@@ -47,3 +52,20 @@ def iter_valid_fields(meta):
                 continue
 
         yield (field_name, field)
+
+def _get_unique_filename(name):
+    fs = gridfs.GridFS(_get_db())
+    file_root, file_ext = os.path.splitext(name)
+    count = itertools.count(1)
+    while fs.exists(filename=name):
+        # file_ext includes the dot.
+        name = os.path.join("%s_%s%s" % (file_root, count.next(), file_ext))
+    return name
+
+def save_file(instance, field_name, file):
+    field = getattr(instance, field_name)
+    filename = _get_unique_filename(file.name)
+    # seek to start to make sure we get the whole file
+    file.file.seek(0)
+    field.replace(file, content_type=file.content_type, filename=filename)
+    return field
