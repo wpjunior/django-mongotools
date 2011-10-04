@@ -3,7 +3,10 @@ from django.utils.encoding import smart_unicode
 from pymongo.errors import InvalidId
 from pymongo.objectid import ObjectId
 from django.core.validators import EMPTY_VALUES
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_unicode, force_unicode
+from django.utils.translation import ugettext_lazy as _
+
+from mongoengine import ReferenceField as MongoReferenceField
 
 BLANK_CHOICE_DASH = [("", "---------")]
 
@@ -49,7 +52,7 @@ class ReferenceField(forms.ChoiceField):
     def prepare_value(self, value):
         if hasattr(value, '_meta'):
             return value.pk
-
+        
         return super(ReferenceField, self).prepare_value(value)
 
     def _set_queryset(self, queryset):
@@ -84,6 +87,52 @@ class ReferenceField(forms.ChoiceField):
         except (TypeError, InvalidId, self.queryset._document.DoesNotExist):
             raise forms.ValidationError(self.error_messages['invalid_choice'] % {'value':value})
         return obj
+
+class DocumentMultipleChoiceField(ReferenceField):
+    """A MultipleChoiceField whose choices are a model QuerySet."""
+    widget = forms.SelectMultiple   
+    hidden_widget = forms.MultipleHiddenInput
+    default_error_messages = {
+        'list': _(u'Enter a list of values.'),
+        'invalid_choice': _(u'Select a valid choice. %s is not one of the'
+                            u' available choices.'),
+        'invalid_pk_value': _(u'"%s" is not a valid value for a primary key.')
+    }
+
+    def __init__(self, queryset, *args, **kwargs):
+        super(DocumentMultipleChoiceField, self).__init__(queryset, empty_label=None, *args, **kwargs)  
+
+    def clean(self, value):   
+        if self.required and not value:
+            raise forms.ValidationError(self.error_messages['required'])
+        elif not self.required and not value:
+            return []
+        if not isinstance(value, (list, tuple)):
+            raise forms.ValidationError(self.error_messages['list'])
+        key = 'pk'
+        
+        filter_ids = []
+        for pk in value:
+            try:
+                oid = ObjectId(pk)
+                filter_ids.append(oid)
+            except InvalidId:
+                raise forms.ValidationError(self.error_messages['invalid_pk_value'] % pk)
+        qs = self.queryset.filter(**{'%s__in' % key: filter_ids})
+        pks = set([force_unicode(getattr(o, key)) for o in qs])
+        for val in value:
+            if force_unicode(val) not in pks:
+                raise forms.ValidationError(self.error_messages['invalid_choice'] % val)
+        # Since this overrides the inherited ModelChoiceField.clean
+        # we run custom validators here
+        self.run_validators(value)
+        return qs
+
+    def prepare_value(self, value):
+        if hasattr(value, '__iter__') and not hasattr(value, '_meta'):
+            return [super(DocumentMultipleChoiceField, self).prepare_value(v) for v in value]
+        return super(DocumentMultipleChoiceField, self).prepare_value(value)
+
 
 class MongoFormFieldGenerator(object):
     """This class generates Django form-fields for mongoengine-fields."""
@@ -281,7 +330,17 @@ class MongoFormFieldGenerator(object):
             }
             
             defaults.update(kwargs)
-            return forms.MultipleChoiceField()
+            return forms.MultipleChoiceField(**defaults)
+        elif isinstance(field.field, MongoReferenceField):
+            defaults = {
+                'label': self.get_field_label(field_name, field),
+                'help_text': self.get_field_help_text(field),
+                'required': field.required
+            }
+        
+            defaults.update(kwargs)
+            f = DocumentMultipleChoiceField(field.field.document_type.objects, **defaults)
+            return f
         
     def generate_filefield(self, field_name, field, **kwargs):
         return forms.FileField(**kwargs)
