@@ -118,7 +118,8 @@ class DocumentMultipleChoiceField(ReferenceField):
                 filter_ids.append(oid)
             except InvalidId:
                 raise forms.ValidationError(self.error_messages['invalid_pk_value'] % pk)
-        qs = self.queryset.filter(**{'%s__in' % key: filter_ids})
+        qs = self.queryset.clone()
+        qs = qs.filter(**{'%s__in' % key: filter_ids})
         pks = set([force_unicode(getattr(o, key)) for o in qs])
         for val in value:
             if force_unicode(val) not in pks:
