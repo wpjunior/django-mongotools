@@ -3,8 +3,8 @@ from django import forms
 from django.utils.datastructures import SortedDict
 from mongoengine.base import BaseDocument
 from mongotools.forms.fields import MongoFormFieldGenerator
-from mongotools.forms.utils import mongoengine_validate_wrapper, iter_valid_fields
-from mongoengine.fields import ReferenceField
+from mongotools.forms.utils import mongoengine_validate_wrapper, iter_valid_fields, save_file
+from mongoengine.fields import ReferenceField, FileField
 
 __all__ = ('MongoForm',)
 
@@ -98,7 +98,12 @@ class MongoForm(forms.BaseForm):
 
         # walk through the document fields
         for field_name, field in iter_valid_fields(self._meta):
-            setattr(self.instance, field_name, self.cleaned_data.get(field_name))
+            # FileFields need some more work to ensure the filename is unique
+            if isinstance(self.instance._fields[field_name], FileField):
+                field = save_file(self.instamce, field_name, self.cleaned_data.get(field_name))
+                setattr(self.instance, field_name, field)
+            else:
+                setattr(self.instance, field_name, self.cleaned_data.get(field_name))
 
         if commit:
             self.instance.save()
