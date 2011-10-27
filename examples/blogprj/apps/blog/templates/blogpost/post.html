@@ -15,7 +15,8 @@
         <a href="{{ object.get_absolute_url }}delete/">delete</a>
     </div>
     <span class="infobar">
-        by {{ object.author }}, {{ object.datetime_added|date:"d.m.Y H:i:s" }}
+        by {{ object.author }}, {{ object.datetime_added|date:"d.m.Y H:i:s" }} | <strong>Tags:</strong> 
+        {% for t in object.tags %}<a href="{{ t.get_absolute_url }}">{{ t.tag }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
     </span>
     
     <p class="content">{{ object.content }}</p>

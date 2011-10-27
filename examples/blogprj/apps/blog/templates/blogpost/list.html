@@ -1,7 +1,7 @@
 {% extends "blogpost/base.html" %}
 
 {% block body %}
-    <a href="/new/">New post</a>
+    <a href="/new/">New post</a> | <a href="/newtag/">New tag</a> 
 
     {% for object in object_list %}
         {% include "blogpost/post.html" %}

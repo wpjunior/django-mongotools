@@ -4,7 +4,7 @@ import gridfs
 
 from django import forms
 from mongoengine.base import ValidationError
-from mongoengine.fields import EmbeddedDocumentField, ListField
+from mongoengine.fields import EmbeddedDocumentField, ListField, ReferenceField
 from mongoengine.connection import _get_db
 
 def mongoengine_validate_wrapper(field, old_clean, new_clean):
@@ -45,10 +45,10 @@ def iter_valid_fields(meta):
             continue
 
         if isinstance(field, ListField):
-            if hasattr(field.field, 'choices'):
+            if hasattr(field.field, 'choices') and not isinstance(field.field, ReferenceField):
                 if not field.field.choices:
                     continue
-            else:
+            if not isinstance(field.field, ReferenceField):
                 continue
 
         yield (field_name, field)

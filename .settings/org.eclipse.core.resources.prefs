@@ -1,3 +1,7 @@
-#Wed Oct 05 02:14:15 CEST 2011
+#Thu Oct 27 14:37:55 CEST 2011
 eclipse.preferences.version=1
+encoding//examples/blogprj/apps/blog/forms.py=utf-8
+encoding//examples/blogprj/apps/blog/urls.py=utf-8
+encoding//examples/blogprj/apps/blog/views.py=utf-8
+encoding//examples/blogprj/mongotools/views/__init__.py=utf-8
 encoding/setup.py=utf-8
