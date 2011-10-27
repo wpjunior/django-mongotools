@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.http import HttpResponseRedirect
-
 from mongotools.views import (CreateView, UpdateView,
                               DeleteView, ListView,
                               DetailView)
 
-from models import BlogPost
-from forms import BlogPostForm
+from models import BlogPost, Tag
+from forms import BlogPostForm, TagForm
 
 class PostIndexView(ListView):
     document = BlogPost
@@ -29,3 +25,15 @@ class DeletePostView(DeleteView):
 class UpdatePostView(UpdateView):
     document = BlogPost
     form_class = BlogPostForm
+
+class TagDetailView(DetailView):
+    document = Tag
+
+class AddTagView(CreateView):
+    document = Tag
+    success_url = '/'
+    form_class = TagForm
+
+class UpdateTagView(UpdateView):
+    document = Tag
+    form_class = TagForm
