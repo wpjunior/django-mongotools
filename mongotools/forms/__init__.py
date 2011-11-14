@@ -90,7 +90,7 @@ class MongoForm(forms.BaseForm):
             object_data.update(initial)
 
         self._validate_unique = False
-        super(MongoForm, self).__init__(data, None, auto_id, prefix, object_data, \
+        super(MongoForm, self).__init__(data, files, auto_id, prefix, object_data, \
             error_class, label_suffix, empty_permitted)
 
     def save(self, commit=True):
