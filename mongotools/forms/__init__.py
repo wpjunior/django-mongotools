@@ -4,7 +4,7 @@ from django.utils.datastructures import SortedDict
 from mongoengine.base import BaseDocument
 from mongotools.forms.fields import MongoFormFieldGenerator
 from mongotools.forms.utils import mongoengine_validate_wrapper, iter_valid_fields, save_file
-from mongoengine.fields import ReferenceField, FileField
+from mongoengine.fields import ReferenceField, FileField, ListField
 
 __all__ = ('MongoForm',)
 
@@ -90,7 +90,7 @@ class MongoForm(forms.BaseForm):
             object_data.update(initial)
 
         self._validate_unique = False
-        super(MongoForm, self).__init__(data, None, auto_id, prefix, object_data, \
+        super(MongoForm, self).__init__(data, files, auto_id, prefix, object_data, \
             error_class, label_suffix, empty_permitted)
 
     def save(self, commit=True):
@@ -102,8 +102,8 @@ class MongoForm(forms.BaseForm):
             if isinstance(self.instance._fields[field_name], FileField):
                 field = save_file(self.instamce, field_name, self.cleaned_data.get(field_name))
                 setattr(self.instance, field_name, field)
-            else:
-                setattr(self.instance, field_name, self.cleaned_data.get(field_name))
+                continue
+            setattr(self.instance, field_name, self.cleaned_data.get(field_name))
 
         if commit:
             self.instance.save()

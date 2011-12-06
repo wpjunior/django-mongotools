@@ -1,0 +1,11 @@
+{% extends "blogpost/base.html" %}
+
+{% block body %}
+    <a href="/new/">New post</a> | <a href="/newtag/">New tag</a> | <a href="edit/">Edit tag</a>
+
+    <h1>Tag: {{ object.tag }}</h1>
+
+    {% for object in object.posts_for_tag %}
+        {% include "blogpost/post.html" %}
+    {% endfor %}
+{% endblock %}

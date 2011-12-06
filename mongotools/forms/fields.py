@@ -102,7 +102,7 @@ class DocumentMultipleChoiceField(ReferenceField):
     def __init__(self, queryset, *args, **kwargs):
         super(DocumentMultipleChoiceField, self).__init__(queryset, empty_label=None, *args, **kwargs)  
 
-    def clean(self, value):   
+    def clean(self, value):
         if self.required and not value:
             raise forms.ValidationError(self.error_messages['required'])
         elif not self.required and not value:
@@ -127,7 +127,7 @@ class DocumentMultipleChoiceField(ReferenceField):
         # Since this overrides the inherited ModelChoiceField.clean
         # we run custom validators here
         self.run_validators(value)
-        return qs
+        return list(qs)
 
     def prepare_value(self, value):
         if hasattr(value, '__iter__') and not hasattr(value, '_meta'):

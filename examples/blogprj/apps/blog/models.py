@@ -1,9 +1,36 @@
-import datetime
+from datetime import datetime
 
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
+from django.db.models import permalink
 
 from mongoengine import *
+
+class Tag(Document):
+    tag = StringField(max_length=100, required=True)
+    created = DateTimeField()
+    
+    @property
+    def posts_for_tag(self):
+        return BlogPost.published_posts().filter(tags=self)
+    
+    def save(self, **kwargs):
+        if self.created is None:
+            self.created = datetime.now()
+        
+        return super(Tag, self).save(**kwargs)
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('tag_detail', [self.pk,])
+    
+    def __unicode__(self):
+        return self.tag
+    
+    meta = {
+        'ordering': ['-created'],
+    }
+    
 
 class BlogPost(Document):
     published = BooleanField(default=False)
@@ -12,7 +39,9 @@ class BlogPost(Document):
     slug = StringField()
     content = StringField(required=True)
     
-    datetime_added = DateTimeField(default=datetime.datetime.now)
+    tags = ListField(ReferenceField(Tag))
+    
+    datetime_added = DateTimeField(default=datetime.now)
     
     def save(self):
         if self.slug is None:
