@@ -7,6 +7,12 @@ from mongoengine.base import ValidationError
 from mongoengine.fields import EmbeddedDocumentField, ListField
 from mongoengine.connection import _get_db
 
+from fields import MongoFormFieldGenerator
+
+def generate_field(field):
+    generator = MongoFormFieldGenerator()
+    return generator.generate(field)
+
 def mongoengine_validate_wrapper(field, old_clean, new_clean):
     """
     A wrapper function to validate formdata against mongoengine-field

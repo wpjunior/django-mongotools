@@ -26,7 +26,7 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.base import TemplateResponseMixin, View
 from django.http import HttpResponseRedirect
 from django.views.generic.list import MultipleObjectMixin
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.contrib import messages
 
 class MongoSingleObjectMixin(object):
@@ -190,8 +190,7 @@ class MongoFormMixin(FormMixin, MongoSingleObjectMixin):
     def form_valid(self, form):
         if self.save_permission:
             if not self.request.user.has_perm(self.save_permission):
-                return render_to_response('access_denied.html', locals(),
-                                          context_instance=RequestContext(self.request))
+                return render(self.request, 'access_denied.html', locals())
         self.object = form.save()
 
         self.write_historic()

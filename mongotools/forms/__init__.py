@@ -36,7 +36,7 @@ class MongoFormMetaClass(type):
             # walk through the document fields
             for field_name, field in iter_valid_fields(attrs['Meta']):
                 # add field and override clean method to respect mongoengine-validator
-                doc_fields[field_name] = formfield_generator.generate(field_name, field)
+                doc_fields[field_name] = formfield_generator.generate(field)
                 doc_fields[field_name].clean = mongoengine_validate_wrapper(
                     field,
                     doc_fields[field_name].clean, field._validate)
