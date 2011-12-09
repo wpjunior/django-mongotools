@@ -54,7 +54,7 @@ def iter_valid_fields(meta):
             if hasattr(field.field, 'choices') and not isinstance(field.field, ReferenceField):
                 if not field.field.choices:
                     continue
-            if not isinstance(field.field, ReferenceField):
+            elif not isinstance(field.field, ReferenceField):
                 continue
 
         yield (field_name, field)
