@@ -179,7 +179,7 @@ class MongoFormFieldGenerator(object):
 
     def get_field_label(self, field):
         if field.verbose_name:
-            return field.verbose_name.capitalize()
+            return field.verbose_name
         return field.name.capitalize()
 
     def get_field_help_text(self, field):
