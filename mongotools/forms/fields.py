@@ -177,6 +177,15 @@ class MongoFormFieldGenerator(object):
             return None
         return int(value)
 
+    def boolean_field(self, value):
+        if value in EMPTY_VALUES:
+            return None
+
+        if value == 'True':
+            return True
+        else:
+            return False
+
     def get_field_label(self, field):
         if field.verbose_name:
             return field.verbose_name
@@ -297,15 +306,28 @@ class MongoFormFieldGenerator(object):
         return form_class(**defaults)
 
     def generate_booleanfield(self, field, **kwargs):
-        defaults = {
-            'required': field.required,
-            'initial': field.default,
-            'label': self.get_field_label(field),
-            'help_text': self.get_field_help_text(field)     
-        }
-        
-        defaults.update(kwargs)
-        return forms.BooleanField(**defaults)
+        if field.choices:
+            defaults = {
+                'coerce': self.boolean_field,
+                'empty_value': None,
+                'required': field.required,
+                'initial': field.default,
+                'label': self.get_field_label(field),
+                'choices': self.get_field_choices(field),
+                'help_text': self.get_field_help_text(field)        
+            }
+            defaults.update(kwargs)
+            return forms.TypedChoiceField(**defaults)
+        else:
+            defaults = {
+                'required': field.required,
+                'initial': field.default,
+                'label': self.get_field_label(field),
+                'help_text': self.get_field_help_text(field)     
+                }
+            
+            defaults.update(kwargs)
+            return forms.BooleanField(**defaults)
 
     def generate_datetimefield(self, field, **kwargs):
         defaults = {
