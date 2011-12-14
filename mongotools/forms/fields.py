@@ -180,11 +180,7 @@ class MongoFormFieldGenerator(object):
     def boolean_field(self, value):
         if value in EMPTY_VALUES:
             return None
-
-        if value == 'True':
-            return True
-        else:
-            return False
+        return value.lower() == 'true'
 
     def get_field_label(self, field):
         if field.verbose_name:
@@ -316,6 +312,7 @@ class MongoFormFieldGenerator(object):
                 'choices': self.get_field_choices(field),
                 'help_text': self.get_field_help_text(field)        
             }
+            
             defaults.update(kwargs)
             return forms.TypedChoiceField(**defaults)
         else:
