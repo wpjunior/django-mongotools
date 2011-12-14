@@ -251,7 +251,7 @@ class MongoFormFieldGenerator(object):
                 'required': field.required,
                 'initial': field.default,
                 'label': self.get_field_label(field),
-                'choices': field.choices,
+                'choices': self.get_field_choices(field),
                 'help_text': self.get_field_help_text(field)        
             }
             
