@@ -199,10 +199,6 @@ class MongoFormFieldGenerator(object):
                     'required': field.required,
                     'help_text': self.get_field_help_text(field)}
 
-        # use to get a custom widget
-        if hasattr(field, 'get_custom_widget'):
-            defaults['widget'] = field.get_custom_widget()
-
         if field.max_length and not field.choices:
             defaults['max_length'] = field.max_length
             
