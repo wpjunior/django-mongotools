@@ -45,8 +45,13 @@ class MongoFormMetaClass(type):
                 else:
                     widget = widgets.get(field_name, None)
 
-                doc_fields[field_name] = formfield_generator.generate(
-                    field, widget=widget)
+                if widget:
+                    doc_fields[field_name] = formfield_generator.generate(
+                        field, widget=widget)
+                else:
+                    doc_fields[field_name] = formfield_generator.generate(
+                        field)
+
                 doc_fields[field_name].clean = mongoengine_validate_wrapper(
                     field,
                     doc_fields[field_name].clean, field._validate)
