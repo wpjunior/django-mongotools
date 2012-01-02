@@ -205,9 +205,16 @@ class MongoFormMixin(FormMixin, MongoSingleObjectMixin):
         return context
         
 class BaseDetailView(MongoSingleObjectMixin, View):
+    historic_view_action = None
     def get(self, request, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
+
+        if self.historic_view_action:
+            self.request.user.register_historic(
+                self.object,
+                self.historic_view_action)
+
         return self.render_to_response(context)
 
 class BaseCreateView(MongoFormMixin, ProcessFormView):
