@@ -24,7 +24,7 @@ from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import FormMixin, ProcessFormView, DeletionMixin
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.base import TemplateResponseMixin, View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.generic.list import MultipleObjectMixin
 from django.shortcuts import render
 from django.contrib import messages
@@ -55,11 +55,12 @@ class MongoSingleObjectMixin(object):
             raise AttributeError(u"Generic detail view %s must be"
                                  u" called with object pk."
                                  % self.__class__.__name__)
+
         try:
             obj = queryset.get()
-        except ObjectDoesNotExist:
+        except queryset._document.DoesNotExist:
             raise Http404(u"No %(verbose_name)s found matching the query" %
-                          {'verbose_name': queryset.model._meta.verbose_name})
+                          {'verbose_name': queryset._document.__name__})
         return obj
 
     def get_queryset(self):
