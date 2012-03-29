@@ -55,6 +55,13 @@ class ReferenceField(forms.ChoiceField):
         
         return super(ReferenceField, self).prepare_value(value)
 
+    def __deepcopy__(self, memo):
+        result = super(forms.ChoiceField, self).__deepcopy__(memo)
+        result.queryset = result.queryset
+        result.empty_label = result.empty_label
+        return result
+
+
     def _set_queryset(self, queryset):
         self._queryset = queryset
         self.widget.choices = self.choices
