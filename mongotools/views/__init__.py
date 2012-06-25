@@ -77,7 +77,7 @@ class MongoSingleObjectMixin(object):
                                            u"%(cls)s.get_object()." % {
                                                 'cls': self.__class__.__name__
                                         })
-        return self.queryset._clone()
+        return self.queryset.clone()
 
     def get_context_data(self, **kwargs):
         return kwargs
@@ -93,8 +93,8 @@ class MongoMultipleObjectMixin(MultipleObjectMixin):
         """
         if self.queryset is not None:
             queryset = self.queryset
-            if hasattr(queryset, '_clone'):
-                queryset = queryset._clone()
+            if hasattr(queryset, 'clone'):
+                queryset = queryset.clone()
         elif self.document is not None:
             queryset = self.document.objects
         else:
