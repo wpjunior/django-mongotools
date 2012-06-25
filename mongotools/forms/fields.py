@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.encoding import smart_unicode
 from pymongo.errors import InvalidId
-from pymongo.objectid import ObjectId
+from bson import ObjectId
 from django.core.validators import EMPTY_VALUES
 from django.utils.encoding import smart_unicode, force_unicode
 from django.utils.translation import ugettext_lazy as _
