@@ -353,7 +353,8 @@ class MongoFormFieldGenerator(object):
         
         defaults.update(kwargs)
 
-        id_field = field.document_type._fields['id']
+        id_field_name = field.document_type._meta['id_field']
+        id_field = field.document_type._fields[id_field_name]
 
         if isinstance(id_field, (SequenceField, IntField)):
             defaults['coerce'] = int
