@@ -90,7 +90,7 @@ class ReferenceField(forms.TypedChoiceField):
 
         try:
             if self.coerce != int:
-                oid = ObjectId(value)
+                oid = ObjectId(oid)
 
             oid = super(ReferenceField, self).clean(oid)
 
