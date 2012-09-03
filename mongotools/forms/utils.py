@@ -19,8 +19,8 @@ def mongoengine_validate_wrapper(field, old_clean, new_clean):
     validator and raise a proper django.forms ValidationError if there
     are any problems.
     """
-    def inner_validate(value):
-        value = old_clean(value)
+    def inner_validate(value, *args, **kwargs):
+        value = old_clean(value, *args, **kwargs)
 
         if value is None and field.required:
             raise ValidationError("This field is required")
@@ -70,8 +70,9 @@ def _get_unique_filename(name):
 
 def save_file(instance, field_name, file):
     field = getattr(instance, field_name)
+    
     filename = _get_unique_filename(file.name)
-    # seek to start to make sure we get the whole file
     file.file.seek(0)
+    
     field.replace(file, content_type=file.content_type, filename=filename)
     return field

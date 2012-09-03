@@ -1,5 +1,6 @@
 import types
 from django import forms
+from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import SortedDict
 from mongoengine.base import BaseDocument
 from mongotools.forms.fields import MongoFormFieldGenerator
@@ -52,9 +53,10 @@ class MongoFormMetaClass(type):
                     doc_fields[field_name] = formfield_generator.generate(
                         field)
 
-                doc_fields[field_name].clean = mongoengine_validate_wrapper(
-                    field,
-                    doc_fields[field_name].clean, field._validate)
+                if not isinstance(field, FileField):
+                    doc_fields[field_name].clean = mongoengine_validate_wrapper(
+                        field,
+                        doc_fields[field_name].clean, field._validate)
 
             # write the new document fields to base_fields
             doc_fields.update(attrs['base_fields'])
@@ -110,14 +112,18 @@ class MongoForm(forms.BaseForm):
 
     def save(self, commit=True):
         """save the instance or create a new one.."""
-
         # walk through the document fields
         for field_name, field in iter_valid_fields(self._meta):
             # FileFields need some more work to ensure the filename is unique
             if isinstance(self.instance._fields[field_name], FileField):
-                field = save_file(self.instamce, field_name, self.cleaned_data.get(field_name))
-                setattr(self.instance, field_name, field)
+                io = self.cleaned_data.get(field_name)
+
+                if isinstance(io, UploadedFile):
+                    field = save_file(self.instance, field_name, io)
+                    setattr(self.instance, field_name, field)
+
                 continue
+
             setattr(self.instance, field_name, self.cleaned_data.get(field_name))
 
         if commit:

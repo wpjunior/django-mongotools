@@ -385,4 +385,10 @@ class MongoFormFieldGenerator(object):
             return f
         
     def generate_filefield(self, field, **kwargs):
-        return forms.FileField(**kwargs)
+        defaults = {
+            'required': field.required,
+            'label': self.get_field_label(field),
+            'help_text': self.get_field_help_text(field),
+        }
+        defaults.update(kwargs)
+        return forms.FileField(**defaults)
