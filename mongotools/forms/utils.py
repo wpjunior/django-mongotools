@@ -39,7 +39,10 @@ def iter_valid_fields(meta):
 
     # fetch field configuration and always add the id_field as exclude
     meta_fields = getattr(meta, 'fields', ())
-    meta_exclude = getattr(meta, 'exclude', ()) + (meta.document._meta.get('id_field'),)
+    meta_exclude = getattr(meta, 'exclude', ())
+
+    if hasattr(meta.document, '_meta'):
+        meta_exclude += (meta.document._meta.get('id_field'),)
     # walk through the document fields
 
     for field_name, field in sorted(meta.document._fields.items(), key=lambda t: t[1].creation_counter):
