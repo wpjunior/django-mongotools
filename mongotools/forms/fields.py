@@ -95,7 +95,7 @@ class ReferenceField(forms.TypedChoiceField):
             oid = super(ReferenceField, self).clean(oid)
 
             queryset = self.queryset.clone()
-            obj = queryset.get(id=oid)
+            obj = queryset.get(pk=oid)
         except (TypeError, InvalidId, self.queryset._document.DoesNotExist):
             raise forms.ValidationError(self.error_messages['invalid_choice'] % {'value': oid})
         return obj
