@@ -2,6 +2,8 @@ import types
 from django import forms
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import SortedDict
+from django.forms.widgets import media_property
+
 from mongoengine.base import BaseDocument
 from mongotools.forms.fields import MongoFormFieldGenerator
 from mongotools.forms.utils import mongoengine_validate_wrapper, iter_valid_fields, save_file
@@ -65,7 +67,12 @@ class MongoFormMetaClass(type):
         # maybe we need the Meta class later
         attrs['_meta'] = attrs.get('Meta', object())
 
-        return super(MongoFormMetaClass, cls).__new__(cls, name, bases, attrs)
+        new_class = super(MongoFormMetaClass, cls).__new__(cls, name, bases, attrs)
+
+        if 'media' not in attrs:
+            new_class.media = media_property(new_class)
+
+        return new_class
 
 class MongoForm(forms.BaseForm):
     """Base MongoForm class. Used to create new MongoForms"""
