@@ -11,14 +11,17 @@ from mongoengine.fields import ReferenceField, FileField, ListField
 
 __all__ = ('MongoForm',)
 
+
 class MongoFormMetaClass(type):
+
     """Metaclass to create a new MongoForm."""
 
     def __new__(cls, name, bases, attrs):
         # get all valid existing Fields and sort them
-        fields = [(field_name, attrs.pop(field_name)) for field_name, obj in \
-            attrs.items() if isinstance(obj, forms.Field)]
-        fields.sort(lambda x, y: cmp(x[1].creation_counter, y[1].creation_counter))
+        fields = [(field_name, attrs.pop(field_name)) for field_name, obj in
+                  attrs.items() if isinstance(obj, forms.Field)]
+        fields.sort(
+            lambda x, y: cmp(x[1].creation_counter, y[1].creation_counter))
 
         # get all Fields from base classes
         for base in bases[::-1]:
@@ -27,20 +30,21 @@ class MongoFormMetaClass(type):
 
         # add the fields as "our" base fields
         attrs['base_fields'] = SortedDict(fields)
-        
+
         # Meta class available?
         if 'Meta' in attrs and hasattr(attrs['Meta'], 'document') and \
            issubclass(attrs['Meta'].document, BaseDocument):
             doc_fields = SortedDict()
 
-            formfield_generator = getattr(attrs['Meta'], 'formfield_generator', \
-                MongoFormFieldGenerator)()
+            formfield_generator = getattr(attrs['Meta'], 'formfield_generator',
+                                          MongoFormFieldGenerator)()
 
             widgets = getattr(attrs["Meta"], "widgets", {})
 
             # walk through the document fields
             for field_name, field in iter_valid_fields(attrs['Meta']):
-                # add field and override clean method to respect mongoengine-validator
+                # add field and override clean method to respect
+                # mongoengine-validator
 
                 # use to get a custom widget
                 if hasattr(field, 'get_custom_widget'):
@@ -67,14 +71,17 @@ class MongoFormMetaClass(type):
         # maybe we need the Meta class later
         attrs['_meta'] = attrs.get('Meta', object())
 
-        new_class = super(MongoFormMetaClass, cls).__new__(cls, name, bases, attrs)
+        new_class = super(MongoFormMetaClass, cls).__new__(
+            cls, name, bases, attrs)
 
         if 'media' not in attrs:
             new_class.media = media_property(new_class)
 
         return new_class
 
+
 class MongoForm(forms.BaseForm):
+
     """Base MongoForm class. Used to create new MongoForms"""
     __metaclass__ = MongoFormMetaClass
 
@@ -85,7 +92,7 @@ class MongoForm(forms.BaseForm):
 
         assert isinstance(instance, (types.NoneType, BaseDocument)), \
             'instance must be a mongoengine document, not %s' % \
-                type(instance).__name__
+            type(instance).__name__
 
         assert hasattr(self, 'Meta'), 'Meta class is needed to use MongoForm'
         # new instance or updating an existing one?
@@ -114,8 +121,8 @@ class MongoForm(forms.BaseForm):
             object_data.update(initial)
 
         self._validate_unique = False
-        super(MongoForm, self).__init__(data, files, auto_id, prefix, object_data, \
-            error_class, label_suffix, empty_permitted)
+        super(MongoForm, self).__init__(data, files, auto_id, prefix, object_data,
+                                        error_class, label_suffix, empty_permitted)
 
     def save(self, commit=True):
         """save the instance or create a new one.."""
@@ -131,7 +138,8 @@ class MongoForm(forms.BaseForm):
 
                 continue
 
-            setattr(self.instance, field_name, self.cleaned_data.get(field_name))
+            setattr(
+                self.instance, field_name, self.cleaned_data.get(field_name))
 
         if commit:
             self.instance.save()
