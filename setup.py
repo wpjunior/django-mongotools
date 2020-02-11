@@ -21,5 +21,5 @@ setup(
         'Framework :: Django',
     ],
     zip_safe=False,
-    tests_require=['django==1.3', 'mongoengine']
+    tests_require=['django==1.11.28', 'mongoengine']
 )
